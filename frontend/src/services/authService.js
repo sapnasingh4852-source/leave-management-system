@@ -1,5 +1,5 @@
 // Base API URL from environment variables
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://leave-management-system-w7qj.onrender.com/api';
 
 // Register user
 export const register = async (userData) => {
