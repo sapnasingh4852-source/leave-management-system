@@ -64,12 +64,33 @@ function UserDashboard() {
             {loading ? (
                 <Spinner message="Loading your leave applications..." />
             ) : leaves.length === 0 ? (
-                <div style={styles.emptyState}>
-                    <p style={{ margin: 0, fontSize: '16px', color: '#6b7280' }}>
-                        You have not applied for any leave yet.
+                <div style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    padding: '60px 24px',
+                    textAlign: 'center',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    maxWidth: '600px',
+                    margin: '30px auto'
+                }}>
+                    <div style={{ fontSize: '56px', marginBottom: '16px' }}>📅</div>
+                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#111827', margin: '0 0 8px 0' }}>
+                        No Leave Applications Yet
+                    </h3>
+                    <p style={{ color: '#6b7280', fontSize: '15px', lineHeight: '1.5', margin: '0 0 24px 0' }}>
+                        You haven't submitted any leave requests so far. Click the button below to submit your first leave application.
                     </p>
-                    <Link to="/apply-leave" style={{ ...styles.applyBtn, marginTop: '16px', display: 'inline-block' }}>
-                        Apply Now
+                    <Link
+                        to="/apply-leave"
+                        style={{
+                            ...styles.applyBtn,
+                            display: 'inline-block',
+                            padding: '12px 24px',
+                            fontSize: '15px'
+                        }}
+                    >
+                        + Apply For Your First Leave
                     </Link>
                 </div>
             ) : (
