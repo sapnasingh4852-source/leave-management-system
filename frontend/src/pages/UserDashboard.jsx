@@ -1,9 +1,10 @@
-import Spinner from '../components/Spinner';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getLeaves, deleteLeave } from '../services/leaveService';
 import { getCurrentUser } from '../services/authService';
 import StatusBadge from '../components/StatusBadge';
+import Spinner from '../components/Spinner';
+import Toast from '../components/Toast';
 
 function UserDashboard() {
     const user = getCurrentUser();
@@ -63,8 +64,11 @@ function UserDashboard() {
                 </Link>
             </div>
 
-            {error && <div style={styles.errorAlert}>{error}</div>}
-            {successMessage && <div style={styles.successAlert}>{successMessage}</div>}
+            <Toast
+                message={successMessage || error}
+                type={successMessage ? 'success' : 'error'}
+                onClose={() => { setSuccessMessage(''); setError(''); }}
+            />
 
             {loading ? (
                 <Spinner message="Loading your leave applications..." />
