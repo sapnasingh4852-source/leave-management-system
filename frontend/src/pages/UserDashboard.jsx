@@ -8,9 +8,14 @@ import StatusBadge from '../components/StatusBadge';
 function UserDashboard() {
     const user = getCurrentUser();
     const [leaves, setLeaves] = useState([]);
+    const [leaveTypeFilter, setLeaveTypeFilter] = useState('All');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+    const filteredLeaves = leaveTypeFilter === 'All'
+        ? leaves
+        : leaves.filter((l) => l.leaveType === leaveTypeFilter);
 
     const fetchUserLeaves = async () => {
         try {
@@ -95,6 +100,21 @@ function UserDashboard() {
                 </div>
             ) : (
                 <div style={styles.tableCard}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 20px', borderBottom: '1px solid #e5e7eb' }}>
+                        <label style={{ fontSize: '13px', fontWeight: '600', color: '#4b5563' }}>Filter by Leave Type:</label>
+                        <select
+                            value={leaveTypeFilter}
+                            onChange={(e) => setLeaveTypeFilter(e.target.value)}
+                            style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', backgroundColor: '#ffffff' }}
+                        >
+                            <option value="All">All Leave Types</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Casual Leave">Casual Leave</option>
+                            <option value="Earned Leave">Earned Leave</option>
+                            <option value="Emergency Leave">Emergency Leave</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                     <table style={styles.table}>
                         <thead>
                             <tr style={styles.thRow}>
@@ -107,7 +127,7 @@ function UserDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {leaves.map((leave) => (
+                            {filteredLeaves.map((leave) => (
                                 <tr key={leave._id} style={styles.tr}>
                                     <td style={{ ...styles.td, fontWeight: '600' }}>{leave.leaveType}</td>
                                     <td style={styles.td}>

@@ -1,12 +1,13 @@
-import Spinner from '../components/Spinner';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getLeaves, approveLeave, rejectLeave, deleteLeave } from '../services/leaveService';
 import StatusBadge from '../components/StatusBadge';
+import Spinner from '../components/Spinner';
 
 function AdminDashboard() {
     const [leaves, setLeaves] = useState([]);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [leaveTypeFilter, setLeaveTypeFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -14,11 +15,12 @@ function AdminDashboard() {
 
     const filteredLeaves = leaves.filter((leave) => {
         const matchesStatus = statusFilter === 'All' || leave.status === statusFilter;
+        const matchesType = leaveTypeFilter === 'All' || leave.leaveType === leaveTypeFilter;
         const query = searchQuery.toLowerCase().trim();
         const matchesSearch = !query ||
             (leave.employee?.name?.toLowerCase() || '').includes(query) ||
             (leave.employee?.email?.toLowerCase() || '').includes(query);
-        return matchesStatus && matchesSearch;
+        return matchesStatus && matchesType && matchesSearch;
     });
 
     const fetchAllLeaves = async () => {
@@ -37,12 +39,10 @@ function AdminDashboard() {
         fetchAllLeaves();
     }, []);
 
-    // Approve leave handler
     const handleApprove = async (id) => {
         try {
             const result = await approveLeave(id);
             setSuccessMessage('Leave application approved successfully');
-            // Update the leave in state
             setLeaves(leaves.map((l) => (l._id === id ? result.leave : l)));
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (err) {
@@ -51,7 +51,6 @@ function AdminDashboard() {
         }
     };
 
-    // Reject leave handler
     const handleReject = async (id) => {
         try {
             const result = await rejectLeave(id);
@@ -64,7 +63,6 @@ function AdminDashboard() {
         }
     };
 
-    // Delete leave handler
     const handleDelete = async (id) => {
         try {
             await deleteLeave(id);
@@ -84,41 +82,6 @@ function AdminDashboard() {
                     <h1 style={styles.title}>Admin Dashboard 🛡️</h1>
                     <p style={styles.subtitle}>Review and manage leave applications from all employees</p>
                 </div>
-                <div style={{ position: 'relative', minWidth: '300px' }}>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="🔍 Search employee by name or email..."
-                        style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            backgroundColor: '#ffffff'
-                        }}
-                    />
-                    {searchQuery && (
-                        <button
-                            type="button"
-                            onClick={() => setSearchQuery('')}
-                            style={{
-                                position: 'absolute',
-                                right: '10px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'transparent',
-                                border: 'none',
-                                color: '#9ca3af',
-                                cursor: 'pointer',
-                                fontSize: '16px'
-                            }}
-                        >
-                            ✕
-                        </button>
-                    )}
-                </div>
             </div>
 
             {error && <div style={styles.errorAlert}>{error}</div>}
@@ -134,7 +97,7 @@ function AdminDashboard() {
                 </div>
             ) : (
                 <div style={styles.tableCard}>
-                    <div style={{ padding: '16px 20px 0 20px' }}>
+                    <div style={{ display: 'flex', gap: '12px', padding: '16px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                         <input
                             type="text"
                             placeholder="🔍 Search employees by name or email..."
@@ -142,7 +105,7 @@ function AdminDashboard() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{
                                 width: '100%',
-                                maxWidth: '360px',
+                                maxWidth: '320px',
                                 padding: '8px 14px',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '6px',
@@ -150,9 +113,25 @@ function AdminDashboard() {
                                 boxSizing: 'border-box'
                             }}
                         />
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', color: '#4b5563' }}>Type:</label>
+                            <select
+                                value={leaveTypeFilter}
+                                onChange={(e) => setLeaveTypeFilter(e.target.value)}
+                                style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', backgroundColor: '#ffffff' }}
+                            >
+                                <option value="All">All Leave Types</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Casual Leave">Casual Leave</option>
+                                <option value="Earned Leave">Earned Leave</option>
+                                <option value="Emergency Leave">Emergency Leave</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '10px', padding: '16px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px', padding: '12px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap', backgroundColor: '#fcfcfc' }}>
                         {['All', 'Pending', 'Approved', 'Rejected'].map((status) => {
                             const count = status === 'All' ? leaves.length : leaves.filter((l) => l.status === status).length;
                             const isActive = statusFilter === status;
@@ -162,15 +141,14 @@ function AdminDashboard() {
                                     type="button"
                                     onClick={() => setStatusFilter(status)}
                                     style={{
-                                        padding: '7px 16px',
+                                        padding: '6px 14px',
                                         borderRadius: '20px',
                                         border: isActive ? '1px solid #2563eb' : '1px solid #d1d5db',
                                         backgroundColor: isActive ? '#2563eb' : '#ffffff',
                                         color: isActive ? '#ffffff' : '#374151',
-                                        fontSize: '13px',
+                                        fontSize: '12px',
                                         fontWeight: '600',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s'
+                                        cursor: 'pointer'
                                     }}
                                 >
                                     {status} ({count})
@@ -178,6 +156,7 @@ function AdminDashboard() {
                             );
                         })}
                     </div>
+
                     <table style={styles.table}>
                         <thead>
                             <tr style={styles.thRow}>
@@ -217,7 +196,7 @@ function AdminDashboard() {
                                     </td>
                                     <td style={styles.td}>
                                         <div style={styles.actionGroup}>
-                                            <Link to={`/leaves/${leave._id}`} style={styles.viewLink}>
+                                            <Link to={} style={styles.viewLink}>
                                                 View
                                             </Link>
 
@@ -289,11 +268,6 @@ const styles = {
         padding: '12px 16px',
         borderRadius: '6px',
         marginBottom: '16px'
-    },
-    loading: {
-        textAlign: 'center',
-        padding: '40px',
-        color: '#6b7280'
     },
     emptyState: {
         textAlign: 'center',
