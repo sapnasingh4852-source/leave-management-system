@@ -5,9 +5,14 @@ import StatusBadge from '../components/StatusBadge';
 
 function AdminDashboard() {
     const [leaves, setLeaves] = useState([]);
+    const [statusFilter, setStatusFilter] = useState('All');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+    const filteredLeaves = statusFilter === 'All'
+        ? leaves
+        : leaves.filter((l) => l.status === statusFilter);
 
     const fetchAllLeaves = async () => {
         try {
@@ -87,6 +92,32 @@ function AdminDashboard() {
                 </div>
             ) : (
                 <div style={styles.tableCard}>
+                    <div style={{ display: 'flex', gap: '10px', padding: '16px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
+                        {['All', 'Pending', 'Approved', 'Rejected'].map((status) => {
+                            const count = status === 'All' ? leaves.length : leaves.filter((l) => l.status === status).length;
+                            const isActive = statusFilter === status;
+                            return (
+                                <button
+                                    key={status}
+                                    type="button"
+                                    onClick={() => setStatusFilter(status)}
+                                    style={{
+                                        padding: '7px 16px',
+                                        borderRadius: '20px',
+                                        border: isActive ? '1px solid #2563eb' : '1px solid #d1d5db',
+                                        backgroundColor: isActive ? '#2563eb' : '#ffffff',
+                                        color: isActive ? '#ffffff' : '#374151',
+                                        fontSize: '13px',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {status} ({count})
+                                </button>
+                            );
+                        })}
+                    </div>
                     <table style={styles.table}>
                         <thead>
                             <tr style={styles.thRow}>
@@ -100,7 +131,7 @@ function AdminDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {leaves.map((leave) => (
+                            {filteredLeaves.map((leave) => (
                                 <tr key={leave._id} style={styles.tr}>
                                     <td style={styles.td}>
                                         <div style={{ fontWeight: '600', color: '#111827' }}>
