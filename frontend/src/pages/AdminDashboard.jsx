@@ -200,7 +200,7 @@ function AdminDashboard() {
                                     </td>
                                     <td style={styles.td}>
                                         <div style={styles.actionGroup}>
-                                            <Link to={} style={styles.viewLink}>
+                                            <Link to={`/leaves/${leave._id}`} style={styles.viewLink}>
                                                 View
                                             </Link>
 
