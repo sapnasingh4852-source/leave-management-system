@@ -1,6 +1,6 @@
 import { getToken } from './authService';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://leave-management-system-w7qj.onrender.com/api';
+const API_URL = 'https://leave-management-system-w7qj.onrender.com/api';
 
 // Helper to construct headers with JWT
 const getAuthHeaders = () => {
