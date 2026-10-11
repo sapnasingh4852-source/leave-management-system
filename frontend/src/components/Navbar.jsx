@@ -7,8 +7,11 @@ function Navbar() {
     const user = getCurrentUser();
 
     const handleLogout = () => {
-        logout();
-        navigate('/login');
+        const confirmed = window.confirm('Are you sure you want to log out of LeaveMS?');
+        if (confirmed) {
+            logout();
+            navigate('/login');
+        }
     };
 
     return (
