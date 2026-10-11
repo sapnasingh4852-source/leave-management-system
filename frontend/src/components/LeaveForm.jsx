@@ -17,7 +17,13 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
         }
     }, [initialData]);
 
+    const todayStr = new Date().toISOString().split('T')[0];
+
     const handleSubmit = (e) => {
+        if (fromDate < todayStr) {
+            setError('From Date cannot be earlier than today.');
+            return;
+        }
         e.preventDefault();
         setError('');
 
@@ -65,6 +71,7 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
                     <input
                         type="date"
                         value={fromDate}
+                        min={todayStr}
                         onChange={(e) => setFromDate(e.target.value)}
                         style={styles.input}
                         required
@@ -76,6 +83,7 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
                     <input
                         type="date"
                         value={toDate}
+                        min={fromDate || todayStr}
                         onChange={(e) => setToDate(e.target.value)}
                         style={styles.input}
                         required

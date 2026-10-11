@@ -28,6 +28,13 @@ const createLeave = async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid date format' });
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (start < today) {
+            return res.status(400).json({ message: 'From date cannot be earlier than today' });
+        }
+
         if (end < start) {
             return res.status(400).json({ message: 'To date cannot be earlier than from date' });
         }
@@ -140,6 +147,13 @@ const updateLeave = async (req, res, next) => {
         // Validate dates if provided
         const newFrom = fromDate ? new Date(fromDate) : leave.fromDate;
         const newTo = toDate ? new Date(toDate) : leave.toDate;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (fromDate && newFrom < today) {
+            return res.status(400).json({ message: 'From date cannot be earlier than today' });
+        }
 
         if (newTo < newFrom) {
             return res.status(400).json({ message: 'To date cannot be earlier than from date' });
