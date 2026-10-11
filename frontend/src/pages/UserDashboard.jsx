@@ -1,3 +1,4 @@
+import Spinner from '../components/Spinner';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getLeaves, deleteLeave } from '../services/leaveService';
@@ -61,7 +62,7 @@ function UserDashboard() {
             {successMessage && <div style={styles.successAlert}>{successMessage}</div>}
 
             {loading ? (
-                <div style={styles.loading}>Loading your leaves...</div>
+                <Spinner message="Loading your leave applications..." />
             ) : leaves.length === 0 ? (
                 <div style={styles.emptyState}>
                     <p style={{ margin: 0, fontSize: '16px', color: '#6b7280' }}>
