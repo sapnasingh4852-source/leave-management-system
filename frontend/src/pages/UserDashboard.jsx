@@ -28,6 +28,11 @@ function UserDashboard() {
     }, []);
 
     const handleDelete = async (id) => {
+        const confirmed = window.confirm(
+            'Are you sure you want to delete this pending leave application? This action cannot be undone.'
+        );
+        if (!confirmed) return;
+
         try {
             await deleteLeave(id);
             setSuccessMessage('Leave application deleted successfully');
