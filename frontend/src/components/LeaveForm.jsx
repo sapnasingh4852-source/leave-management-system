@@ -6,6 +6,7 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
     const [toDate, setToDate] = React.useState(initialData?.toDate ? initialData.toDate.substring(0, 10) : '');
     const [reason, setReason] = React.useState(initialData?.reason || '');
     const [error, setError] = React.useState('');
+    const isDateRangeInvalid = Boolean(fromDate && toDate && new Date(toDate) < new Date(fromDate));
 
     // Pre-fill form when initialData changes (e.g. on edit fetch)
     React.useEffect(() => {
@@ -73,7 +74,11 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
                         value={fromDate}
                         min={todayStr}
                         onChange={(e) => setFromDate(e.target.value)}
-                        style={styles.input}
+                        style={{
+                            ...styles.input,
+                            borderColor: isDateRangeInvalid ? '#ef4444' : '#d1d5db',
+                            backgroundColor: isDateRangeInvalid ? '#fef2f2' : '#ffffff'
+                        }}
                         required
                     />
                 </div>
@@ -85,11 +90,20 @@ function LeaveForm({ initialData, onSubmit, submitButtonText = 'Submit', isSubmi
                         value={toDate}
                         min={fromDate || todayStr}
                         onChange={(e) => setToDate(e.target.value)}
-                        style={styles.input}
+                        style={{
+                            ...styles.input,
+                            borderColor: isDateRangeInvalid ? '#ef4444' : '#d1d5db',
+                            backgroundColor: isDateRangeInvalid ? '#fef2f2' : '#ffffff'
+                        }}
                         required
                     />
                 </div>
             </div>
+            {isDateRangeInvalid && (
+                <div style={{ color: '#ef4444', fontSize: '13px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    ⚠️ To Date cannot be earlier than From Date.
+                </div>
+            )}
 
             <div style={styles.formGroup}>
                 <label style={styles.label}>Reason for Leave</label>
