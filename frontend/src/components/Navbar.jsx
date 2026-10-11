@@ -1,10 +1,20 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getCurrentUser, logout } from '../services/authService';
 
 function Navbar() {
     const navigate = useNavigate();
     const user = getCurrentUser();
+
+    const getNavLinkStyle = ({ isActive }) => ({
+        ...styles.link,
+        color: isActive ? '#ffffff' : '#d1d5db',
+        fontWeight: isActive ? '600' : '500',
+        borderBottom: isActive ? '2px solid #3b82f6' : '2px solid transparent',
+        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+        padding: '6px 12px',
+        borderRadius: '6px'
+    });
 
     const handleLogout = () => {
         const confirmed = window.confirm('Are you sure you want to log out of LeaveMS?');
@@ -25,17 +35,17 @@ function Navbar() {
                     {user ? (
                         <>
                             {user.role === 'admin' ? (
-                                <Link to="/admin" style={styles.link}>
+                                <NavLink to="/admin" style={getNavLinkStyle}>
                                     Admin Dashboard
-                                </Link>
+                                </NavLink>
                             ) : (
                                 <>
-                                    <Link to="/dashboard" style={styles.link}>
+                                    <NavLink to="/dashboard" style={getNavLinkStyle}>
                                         My Dashboard
-                                    </Link>
-                                    <Link to="/apply-leave" style={styles.link}>
+                                    </NavLink>
+                                    <NavLink to="/apply-leave" style={getNavLinkStyle}>
                                         Apply Leave
-                                    </Link>
+                                    </NavLink>
                                 </>
                             )}
 
@@ -49,9 +59,9 @@ function Navbar() {
                         </>
                     ) : (
                         <>
-                            <Link to="/login" style={styles.link}>
+                            <NavLink to="/login" style={getNavLinkStyle}>
                                 Login
-                            </Link>
+                            </NavLink>
                             <Link to="/register" style={styles.registerBtn}>
                                 Register
                             </Link>
