@@ -7,13 +7,19 @@ import StatusBadge from '../components/StatusBadge';
 function AdminDashboard() {
     const [leaves, setLeaves] = useState([]);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const filteredLeaves = statusFilter === 'All'
-        ? leaves
-        : leaves.filter((l) => l.status === statusFilter);
+    const filteredLeaves = leaves.filter((leave) => {
+        const matchesStatus = statusFilter === 'All' || leave.status === statusFilter;
+        const query = searchQuery.toLowerCase().trim();
+        const matchesSearch = !query ||
+            (leave.employee?.name?.toLowerCase() || '').includes(query) ||
+            (leave.employee?.email?.toLowerCase() || '').includes(query);
+        return matchesStatus && matchesSearch;
+    });
 
     const fetchAllLeaves = async () => {
         try {
@@ -78,6 +84,41 @@ function AdminDashboard() {
                     <h1 style={styles.title}>Admin Dashboard 🛡️</h1>
                     <p style={styles.subtitle}>Review and manage leave applications from all employees</p>
                 </div>
+                <div style={{ position: 'relative', minWidth: '300px' }}>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="🔍 Search employee by name or email..."
+                        style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            backgroundColor: '#ffffff'
+                        }}
+                    />
+                    {searchQuery && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#9ca3af',
+                                cursor: 'pointer',
+                                fontSize: '16px'
+                            }}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
             </div>
 
             {error && <div style={styles.errorAlert}>{error}</div>}
@@ -93,6 +134,24 @@ function AdminDashboard() {
                 </div>
             ) : (
                 <div style={styles.tableCard}>
+                    <div style={{ padding: '16px 20px 0 20px' }}>
+                        <input
+                            type="text"
+                            placeholder="🔍 Search employees by name or email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{
+                                width: '100%',
+                                maxWidth: '360px',
+                                padding: '8px 14px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                boxSizing: 'border-box'
+                            }}
+                        />
+                    </div>
+
                     <div style={{ display: 'flex', gap: '10px', padding: '16px 20px', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
                         {['All', 'Pending', 'Approved', 'Rejected'].map((status) => {
                             const count = status === 'All' ? leaves.length : leaves.filter((l) => l.status === status).length;
